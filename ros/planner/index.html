@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://exampleaaaaaaaaa.com/ros/planner/">
+        <link rel="shortcut icon" href="../../img/favicon.ico">
+        <title>ros系统 - My Docs</title>
+        <link href="../../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css">
+
+        <script src="../../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="../..">My Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href="../.." class="nav-link">主页</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../../about/" class="nav-link">关于</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">ros系统</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../../about/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#ros" class="nav-link">ROS导航</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#_2" class="nav-link">轨迹规划</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#ros_1" class="nav-link">在ROS中注册一个全局规划插件</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#ros_2" class="nav-link">在ROS中自己注册一个局部路径规划器插件</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_5" class="nav-link">坦克导航功能的改进</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="ros">ROS导航</h1>
+<h3 id="_1">源码下载</h3>
+<p><strong><a href="https://github.com/will1991/rosintrodution">轨迹跟随</a></strong>
+<strong><a href="https://github.com/adrianapadilla/simple_local_planner">局部规划</a></strong>
+<strong><a href="http://wiki.ros.org/navigation/Tutorials/Writing%20A%20Global%20Path%20Planner%20As%20Plugin%20in%20ROS?action=print">全局规划教程</a></strong>
+<strong><a href="https://github.com/ros-planning/navigation">navigation导航包</a></strong></p>
+<h2 id="_2">轨迹规划</h2>
+<p>首先在nav导航包中的nav_core软件包就已经包含了Dijkstra算法，俗称D星算法，只需在launch文件中指定全局导航插件为carrot_planner/CarrotPlanner即可使用</p>
+<pre><code class="language-xml">&lt;param name=&quot;base_global_planner&quot; value=&quot;carrot_planner/CarrotPlanner&quot; /&gt;
+</code></pre>
+<h3 id="dijkstra">Dijkstra算法</h3>
+<p>(Dijkstra)算法是典型最短路径算法，用于计算一个节点到其他各个节点的最短路径。
+<img alt="img" src="img/dijkstra_.jpg" /></p>
+<blockquote>
+<p>这是在drew 程序中4000个节点的随机路网上Dijkstra算法搜索最短路的演示，黑色圆圈表示经过遍历计算过的点由图中可以看到Dijkstra算法从起始点开始向周围层层计算扩展，在计算大量节点后，到达目标点。所以速度慢效率低。</p>
+</blockquote>
+<h3 id="2-a">2. A星算法</h3>
+<p>代价计算
+这里我们允许机器人在栅格地图中沿着八邻域行走，所以我们使用对角距离来计算代价。
+公式表示为：</p>
+<p>f(n)=g(n)+h(n)
+其中f(n) 是节点n从初始点到目标点的估价函数，
+g(n) 是在状态空间中从初始节点到n节点的实际代价，
+h(n)是从n到目标节点最佳路径的估计代价。</p>
+<p>保证找到最短路径（最优解的）条件，关键在于估价函数h(n)的选取：
+估价值h(n)&lt;= n到目标节点的距离实际值，这种情况下，搜索的点数多，搜索范围大，效率低。但能得到最优解。
+如果 估价值&gt;实际值, 搜索的点数少，搜索范围小，效率高，但不能保证得到最优解。
+估价值与实际值越接近，估价函数取得就越好。
+明显优于Dijstra算法的毫无无方向的向四周搜索。</p>
+<p>A<em>算法和Dijistra算法的区别在于有无估价值，Dijistra算法相当于A</em>算法中估价值为0的情况。</p>
+<p><strong>实现步骤：</strong>
+1. 初始化两个集合：
+2. 一个存放要处理点的集合open_set
+3. 另一个存放已经处理过点的集合close_set
+4. 将起点放入open_set，并设置代价为最高代价0
+5. 开始遍历
+6. 如果open_set不为空，则从中选取代价最高的点n
+7. 若点n为终点：
+a. 从终点开始逐渐追踪parent节点，一直到起点
+b. 返回结果路径，算法结束
+8. 若点n不为终点
+a. 将点n从open_set中删除，放到close_set中
+b. 遍历节点n的8邻域节点：
+i. 如果邻域节点m在close_set中，则直接调过
+ii. 如果邻域节点m不在open_set中：
+i. 设置节点m的parent为节点n
+ii. 计算节点m的cost代价
+iii. 将节点m加入open_set中</p>
+<h3 id="2-d">2. D星算法</h3>
+<p>“D*算法”的名称源自 Dynamic A Star,最初由Anthony Stentz于“Optimal and Efficient Path Planning for Partially-Known Environments”中介绍。它是一种启发式的路径搜索算法，适合面对周围环境未知或者周围环境存在动态变化的场景。</p>
+<h4 id="d">D星算法的原理</h4>
+<p>1.先用Dijstra算法从目标节点G向起始节点搜索。储存路网中目标点到各个节点的最短路和该位置到目标点的实际值h,k（k为所有变化h之中最小的值,当前为k=h。每个节点包含上一节点到目标点的最短路信息1(2),2(5),5(4)，4（7）。则1到4的最短路为1-2-5-4。
+原OPEN和CLOSE中节点信息保存。</p>
+<p>2.机器人沿最短路开始移动，在移动的下一节点没有变化时，无需计算，利用上一步Dijstra计算出的最短路信息从出发点向后追述即可，当在Y点探测到下一节点X状态发生改变，如堵塞。机器人首先调整自己在当前位置Y到目标点G的实际值h(Y)，h(Y)=X到Y的新权值c(X,Y)+X的原实际值h(X).X为下一节点(到目标点方向Y-&gt;X-&gt;G），Y是当前点。k值取h值变化前后的最小。</p>
+<p>3.用A<em>或其它算法计算，这里假设用A</em>算法,遍历Y的子节点，点放入CLOSE,调整Y的子节点a的h值，h(a)=h(Y)+Y到子节点a的权重C(Y,a),比较a点是否存在于OPEN和CLOSE中，方法如下：</p>
+<p><img alt="img" src="img/dijkstra_ssss.jpg" /></p>
+<h2 id="ros_1">在ROS中注册一个全局规划插件</h2>
+<p>除此之外还可以自己开发全局规划算法就是为全局规划类创建插件，将其集成到move_base包的全局规划模块<code>nav_core::BaseGlobalPlanner</code>中。
+步骤如下：</p>
+<h3 id="1">1. 编写头文件和源文件</h3>
+<p>如果创建的是全局规划类插件，那么该类就要继承自<code>nav_core::BaseGlobalPlanner</code></p>
+<pre><code class="language-C++">class plugins_Name : public nav_core::BaseGlobalPlanner
+</code></pre>
+<p>最终规划的方法都存储在plugins_Name类的makePlan方法中</p>
+<pre><code>bool makePlan（start，goal，plan）
+</code></pre>
+<p>只需在makePlan中将分析的路径点保存到plan中即可完成该类的路径规划;</p>
+<h3 id="3">3. 导出为插件</h3>
+<p>首先需要通过导出将全局规划类注册为插件。它必须被标记为一个导出的类。这是通过特殊宏PLUGINLIB_EXPORT_CLASS完成的。这个宏可以放在构成插件库的任何源（.cpp）文件中，通常放在导出类的.cpp文件的末尾。</p>
+<pre><code class="language-C++">#include &lt;pluginlib/class_list_macros.h&gt;
+PLUGINLIB_EXPORT_CLASS(global_planner::GlobalPlanner, nav_core::BaseGlobalPlanner);
+</code></pre>
+<p>这将使global_planner::GlobalPlanner类注册为move_base包中nav_core::BaseGlobalPlanner类的插件。</p>
+<h3 id="3_1">3. 编译</h3>
+<p>要编译上面创建的全局规划库，必须将其添加到CMakeLists.txt中生成动态链接库。添加代码：</p>
+<pre><code class="language-Cmake">add_library(global_planner_lib src/global_planner.cpp)
+</code></pre>
+<p>然后在终端中运行<code>catkin_make</code>，在catkin工作空间目录中生成二进制文件。这将在lib目录中创建库文件 <code>工作空间下的/devel/lib/libglobal_planner_lib</code>。</p>
+<h3 id="4">4. 插件描述文件</h3>
+<p>插件描述文件是一个XML文件，用于以机器可读格式存储有关插件的所有重要信息。它包含有关插件库的信息，插件的名称，插件的类型等。
+内容如下所示：</p>
+<pre><code class="language-xml">&lt;library path=&quot;lib/libglobal_planner_lib&quot;&gt;
+  &lt;class name=&quot;global_planner/GlobalPlanner&quot; type=&quot;global_planner::GlobalPlanner&quot; base_class_type=&quot;nav_core::BaseGlobalPlanner&quot;&gt;
+    &lt;description&gt;This is a global planner plugin by iroboapp project.&lt;/description&gt;
+  &lt;/class&gt;
+ &lt;/library&gt;
+</code></pre>
+<p>在第一行 <code>&lt;library path="lib/libglobal_planner_lib"&gt;</code>我们指定插件库的路径
+其中lib是在目录中的文件夹devel中。在此行中，我们首先指定我们将在move_base启动文件中使用的global_planner插件的名称作为参数。base_class_type指定了实现插件的基类的名称，在我们的例子中是nav_core::BaseGlobalPlanner。</p>
+<p>我们需要这个文件用来允许ROS系统自动发现，加载。</p>
+<h3 id="4-ros">4. 注册插件到ROS系统</h3>
+<p>为了让pluginlib在所有ROS程序包上查询系统上的所有可用插件，每个程序包都必须明确指定其导出的插件，哪些程序包库包含这些插件。
+因此需要在package.xml后面添加以下内容：</p>
+<pre><code>&lt;export&gt;
+&lt;nav_core plugin=&quot;${prefix}/global_planner_plugin.xml&quot; /&gt;
+&lt;/export&gt;
+</code></pre>
+<p><code>${PREFIX}</code>
+会自动确定global_planner_plugin.xml文件完整的路径</p>
+<blockquote>
+<p>注意：为了使上述导出命令正常工作，提供程序包必须直接依赖于包含插件接口的程序包，这在全局规划程序的情况下是nav_core。因此，global_planner软件包在其package.xml中必须包含以下内容：
+<code>xml
+&lt;build_depend&gt;nav_core&lt;/build_depend&gt;
+&lt;run_depend&gt;nav_core&lt;/run_depend&gt;</code>
+这将告诉编译器对于nav_core包的依赖性</p>
+</blockquote>
+<p>可以通过rospack查询ROS包系统，以查看任何给定的包中的可用的插件。如下：</p>
+<pre><code class="language-xml">rospack plugins --attrib=plugin nav_core
+</code></pre>
+<h3 id="_3">自定义全局导航的头文件(固定模板)</h3>
+<pre><code>#ifndef GLOBAL_PLANNER_CPP
+#define GLOBAL_PLANNER_CPP
+
+#include &lt;ros/ros.h&gt;
+#include &lt;costmap_2d/costmap_2d_ros.h&gt;
+#include &lt;costmap_2d/costmap_2d.h&gt;
+#include &lt;nav_core/base_global_planner.h&gt;
+#include &lt;geometry_msgs/PoseStamped.h&gt;
+#include &lt;angles/angles.h&gt;
+#include &lt;base_local_planner/world_model.h&gt;
+#include &lt;base_local_planner/costmap_model.h&gt;
+
+ namespace trajectoryFollowGlobal {
+
+ class trajectoryFollowGlobal : public nav_core::BaseGlobalPlanner {
+ public:
+
+  trajectoryFollowGlobal();
+  trajectoryFollowGlobal(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
+
+  /** overridden classes from interface nav_core::BaseGlobalPlanner **/
+  void initialize(std::string name, costmap_2d::Costmap2DROS* costmap_ros);
+  bool makePlan(const geometry_msgs::PoseStamped&amp; start,
+                const geometry_msgs::PoseStamped&amp; goal,
+                std::vector&lt;geometry_msgs::PoseStamped&gt;&amp; plan
+               );
+  };
+ };
+ #endif
+</code></pre>
+<h3 id="_4">自定义全局导航的源文件</h3>
+<p>源文件可以使用navigation的导航包中的carrot_planner.cpp作为模板，在他的基础上进行开发自己的算法。</p>
+<pre><code>catkin_make
+source devel/setup.bash
+rospack plugins --attrib=plugin nav_core # 查看当前环境下加载的插件
+</code></pre>
+<h2 id="ros_2">在ROS中自己注册一个局部路径规划器插件</h2>
+<h3 id="1_1">1. 编写头文件和源文件</h3>
+<p>如果创建的是局部规划类插件，那么该类就要继承自<code>nav_core::BaseLocalPlanner</code></p>
+<pre><code class="language-C++">class plugins_Name : public nav_core::BaseLocalPlanner
+</code></pre>
+<p>首先需要通过导出将全局规划类注册为插件。它必须被标记为一个导出的类。这是通过特殊宏PLUGINLIB_EXPORT_CLASS完成的。这个宏可以放在构成插件库的任何源（.cpp）文件中。</p>
+<pre><code class="language-C++">#include &lt;pluginlib/class_list_macros.h&gt;
+PLUGINLIB_DECLARE_CLASS(simple_local_planner, SimplePlannerROS, simple_local_planner::SimplePlannerROS, nav_core::BaseLocalPlanner);
+</code></pre>
+<p>这将使simple_local_planner::SimplePlannerROS类注册为move_base包中nav_core::BaseLocalPlanner。</p>
+<h3 id="2">2. 编译</h3>
+<p>与全局规划插件相同，生成动态链接库</p>
+<pre><code>add_library(simple_local_planner
+  src/simple_local_planner.cpp
+ )
+</code></pre>
+<h3 id="3_2">3. 插件描述文件</h3>
+<p>编译完成后，在devel文件下会生成名称为libsimple_local_planner的链接库。这时就需要一个xml的插件描述文件，用于以机器可读格式存储有关插件的所有重要信息。它包含有关插件库的信息，插件的名称，插件的类型等。
+内容如下所示：</p>
+<pre><code>&lt;library path=&quot;lib/libsimple_local_planner&quot;&gt;
+    &lt;class name =&quot;simple_local_planner/SimplePlannerROS&quot; type =&quot;simple_local_planner::SimplePlannerROS&quot; base_class_type= &quot;nav_core::BaseLocalPlanner&quot;&gt;
+        &lt;description&gt;
+            Simple Plugin for BaseLocalPlanner that allows you to follow the global path as it is.
+        &lt;/description&gt;
+    &lt;/class&gt;
+&lt;/library&gt;
+</code></pre>
+<h3 id="4-ros_1">4. 注册插件到ros系统</h3>
+<p>为了让pluginlib在所有ROS程序包上查询系统上的所有可用插件，每个程序包都必须明确指定其导出的插件，哪些程序包库包含这些插件。
+因此需要在package.xml后面添加以下内容：</p>
+<pre><code>  &lt;export&gt;
+    &lt;nav_core plugin=&quot;${prefix}/slp_plugin.xml&quot;/&gt;
+  &lt;/export&gt;
+</code></pre>
+<pre><code>${PREFIX}
+</code></pre>
+<p>自动确定slp_plugin.xml插件描述文件完整的路径</p>
+<h2 id="_5">坦克导航功能的改进</h2>
+<h3 id="_6">实现功能</h3>
+<ol>
+<li>两点之间，实现直线前进。</li>
+<li>局部路径规划范围内使用teb规划进行避障</li>
+</ol>
+<h3 id="_7">实现方法</h3>
+<ol>
+<li>
+<p>使用navfn/NavfnROS全局导航插件进行全局导航，该插件使用A*算法，起点到终点在没有障碍物的情况下是路径是一条直线。在遇到障碍物的情况下，路径是直线运动到障碍物的膨胀
+边缘，然后转弯，
+   <img alt="img" src="img/path.png" /></p>
+</li>
+<li>
+<p>局部路径使用teb进行导航规划。局部路径不会完全贴和全局路径，这和参数设置有关，全局地图的路径生成主要考虑全局地图的膨胀系数，而TEB的导航路径主要参考teb参数中的膨胀路径。
+需要让teb路径贴和全局路径主要设置两个参数</p>
+</li>
+</ol>
+<pre><code>global_plan_viapoint_seq    # 在全局路径上按照一定间距，以坦克位置为起点生成途径点，负数表示不生成，点数越多越贴和
+inflation_dist              # 坦克局部障碍物的膨胀系数
+weight_viapoint             # 坦克路过途径点的权重，权重越大越贴和全局路径
+</code></pre>
+<p>调整参数的效果
+<img alt="img" src="img/02.png" /></p>
+<h3 id="_8">出现的问题</h3>
+<ol>
+<li>坦克雷达出现点漂移，在坦克的轮廓范围内出现雷达点，使坦克判断碰撞到了障碍物，无法移动。</li>
+</ol></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "../..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../../js/base.js" defer></script>
+        <script src="../../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
