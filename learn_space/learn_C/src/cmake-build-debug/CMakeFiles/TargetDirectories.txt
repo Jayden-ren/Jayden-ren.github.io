@@ -1,0 +1,3 @@
+C:/Users/HP/Desktop/wanshiwu_mkdocs/wanshiwu/jayden_ren_wanshiwu_source/docs/learn_space/learn_C/src/cmake-build-debug/CMakeFiles/test_charcode.dir
+C:/Users/HP/Desktop/wanshiwu_mkdocs/wanshiwu/jayden_ren_wanshiwu_source/docs/learn_space/learn_C/src/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/HP/Desktop/wanshiwu_mkdocs/wanshiwu/jayden_ren_wanshiwu_source/docs/learn_space/learn_C/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir
